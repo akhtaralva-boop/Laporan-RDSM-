@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <meta name="theme-color" content="#075E54">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>📋 Lapshift RDSM → WA</title>
+  <style>
+    :root { --wa: #25D366; --dark: #075E54; --bg: #f0f2f5; --card: #fff; --text: #111; --border: #ddd; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); padding: 12px; line-height: 1.4; }
+    .container { max-width: 680px; margin: 0 auto; background: var(--card); border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+    header { background: linear-gradient(135deg, var(--dark), var(--wa)); color: #fff; padding: 18px 20px; text-align: center; position: relative; }
+    header h1 { font-size: 1.3rem; margin-bottom: 4px; }
+    header p { font-size: 0.85rem; opacity: 0.9; }
+    .form-section { padding: 16px; border-bottom: 1px solid var(--border); }
+    .form-section h3 { font-size: 1rem; color: var(--dark); margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+    .grid { display: grid; gap: 10px; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    @media (max-width: 520px) { .row { grid-template-columns: 1fr; } }
+    label { display: block; font-size: 0.85rem; font-weight: 500; margin-bottom: 4px; color: #444; }
+    input, select, textarea { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.95rem; background: #fafafa; transition: all 0.2s; -webkit-appearance: none; }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: var(--wa); box-shadow: 0 0 0 3px rgba(37,211,102,0.15); background: #fff; }
+    textarea { min-height: 80px; resize: vertical; }
+    .staff-box { background: #f8f9fa; padding: 10px; border-radius: 8px; border: 1px dashed var(--border); margin-bottom: 8px; }
+    .staff-row { display: flex; gap: 6px; margin-bottom: 6px; align-items: center; flex-wrap: wrap; }
+    .staff-row .staff { flex: 1; min-width: 90px; }
+    .staff-row .jam-select { width: 115px; flex-shrink: 0; font-size: 0.85rem; }
+    .staff-row .jam-custom { width: 85px; flex-shrink: 0; font-size: 0.85rem; display: none; }
+    .btn { padding: 8px 12px; border: none; border-radius: 6px; font-size: 0.85rem; cursor: pointer; font-weight: 500; transition: 0.15s; }
+    .btn-sm { background: var(--dark); color: #fff; }
+    .btn-remove { background: #dc3545; color: #fff; }
+    .btn-add { background: #6c757d; color: #fff; margin-top: 4px; }
+    .actions { padding: 16px; background: #f8f9fa; border-top: 1px solid var(--border); }
+    .btn-group { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
+    .btn-lg { padding: 12px 16px; font-size: 0.95rem; border-radius: 10px; display: flex; align-items: center; gap: 6px; }
+    .btn-wa { background: var(--wa); color: #fff; }
+    .btn-wa:hover { background: #12b76a; }
+    .btn-sec { background: #6c757d; color: #fff; }
+    .btn-out { background: transparent; border: 1px solid var(--border); color: #555; }
+    .preview-box { background: #f4f6f8; padding: 14px; border-top: 1px solid var(--border); }
+    .preview-box pre { background: #fff; padding: 12px; border-radius: 8px; border: 1px solid var(--border); font-family: monospace; font-size: 0.85rem; white-space: pre-wrap; max-height: 300px; overflow-y: auto; color: #333; }
+    .settings-btn { position: absolute; top: 16px; right: 16px; background: rgba(255,255,255,0.2); border: none; color: #fff; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 1rem; }
+    .settings-panel { display: none; padding: 12px 16px; background: #eef1f5; border-bottom: 1px solid var(--border); }
+    .settings-panel.active { display: block; }
+    footer { text-align: center; padding: 14px; color: #777; font-size: 0.75rem; background: #f8f9fa; }
+    .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #333; color: #fff; padding: 10px 18px; border-radius: 20px; font-size: 0.85rem; opacity: 0; transition: 0.3s; pointer-events: none; z-index: 999; }
+    .toast.show { opacity: 1; bottom: 30px; }    .foto-section { background: #fff8e1; border: 2px dashed #ffb300; border-radius: 12px; padding: 14px; margin-top: 10px; }
+    .foto-upload-area { border: 2px dashed #ccc; border-radius: 10px; padding: 20px; text-align: center; cursor: pointer; transition: 0.2s; background: #fafafa; }
+    .foto-upload-area:hover { border-color: var(--wa); background: #f0fff4; }
+    .foto-preview { max-width: 100%; max-height: 200px; border-radius: 8px; margin-top: 10px; display: none; }
+    .foto-actions { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+    .foto-info { font-size: 0.8rem; color: #666; margin-top: 6px; }
+    .hidden-input { display: none; }
+    .pelayanan-box { background: #f8f9fa; border: 1px solid var(--border); border-radius: 8px; padding: 8px; }
+    .pelayanan-row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
+    .pelayanan-row input { flex: 1; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>📋 Lapshift RDSM</h1>
+      <p>Isi → Foto → Preview → Kirim ke WhatsApp</p>
+      <button class="settings-btn" onclick="toggleSettings()">⚙️</button>
+    </header>
+
+    <div class="settings-panel" id="settingsPanel">
+      <div class="row">
+        <div>
+          <label>Nomor WA Tujuan (Opsional)</label>
+          <input type="text" id="targetWA" placeholder="6281234567890" />
+        </div>
+        <div>
+          <label>Panggilan Manual (Override)</label>
+          <select id="customGreeting">
+            <option value="">Otomatis (Sesuai Shift)</option>
+            <option value="Selamat pagi,">Selamat pagi,</option>
+            <option value="Selamat siang,">Selamat siang,</option>
+            <option value="Selamat sore,">Selamat sore,</option>
+            <option value="Selamat malam,">Selamat malam,</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <form id="lapshiftForm">
+      <div class="form-section">
+        <h3>📅 Data Shift</h3>
+        <div class="grid">
+          <div class="row">
+            <div><label>Tanggal</label><input type="date" id="tgl" required /></div>
+            <div><label>Shift Jaga</label><select id="shift"><option value="malam">Malam</option><option value="pagi">Pagi</option></select></div>
+          </div>
+          <div class="row">
+            <div><label>Nama Petugas (Penanggung Jawab)</label><input type="text" id="petugas" placeholder="Contoh: Kamal" required /></div>
+            <div><label>Danru / Koordinator (Opsional)</label><input type="text" id="danru" placeholder="Kosongkan jika tidak ada" /></div>          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3>👥 Personil</h3>
+        <div class="row">
+          <div>
+            <label> Krematorium</label>
+            <div id="listKR" class="staff-box">
+              <div class="staff-row">
+                <input type="text" class="staff" placeholder="Nama" />
+                <select class="jam-select">
+                  <option>20.00 - 08.00</option><option>08.00 - 20.00</option>
+                  <option>08.00 - 17.00</option><option>14.00 - 21.00</option>
+                  <option>16.00 - 08.00</option><option>Standby</option><option>Lainnya...</option>
+                </select>
+                <input type="text" class="jam-custom" placeholder="Ketik..." />
+                <button type="button" class="btn btn-remove btn-sm" onclick="remove(this)">✕</button>
+              </div>
+            </div>
+            <button type="button" class="btn btn-add btn-sm" onclick="addStaff('listKR')">+ Tambah</button>
+          </div>
+          <div>
+            <label>📍 Rumah Duka</label>
+            <div id="listRD" class="staff-box">
+              <div class="staff-row">
+                <input type="text" class="staff" placeholder="Nama" />
+                <select class="jam-select">
+                  <option>20.00 - 08.00</option><option>08.00 - 20.00</option>
+                  <option>08.00 - 17.00</option><option>14.00 - 21.00</option>
+                  <option>16.00 - 08.00</option><option>Standby</option><option>Lainnya...</option>
+                </select>
+                <input type="text" class="jam-custom" placeholder="Ketik..." />
+                <button type="button" class="btn btn-remove btn-sm" onclick="remove(this)">✕</button>
+              </div>
+            </div>
+            <button type="button" class="btn btn-add btn-sm" onclick="addStaff('listRD')">+ Tambah</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3>🕯️ Ruang Pelayanan (1 Baris)</h3>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <p style="font-size:0.8rem;color:#666">Format: <b>Nama Almarhum (Ruangan)</b> atau <b>Ruangan - Nama</b></p>
+          <button type="button" class="btn btn-sm" style="background:#6c757d" onclick="clearPelayanan()">🗑️ Bersihkan</button>
+        </div>
+        <div id="pelayananContainer" class="pelayanan-box"></div>
+        <button type="button" class="btn btn-add btn-sm" onclick="addPelayanan()">+ Tambah Baris</button>      </div>
+
+      <div class="form-section">
+        <h3>📋 Kegiatan & Temuan</h3>
+        <div class="grid">
+          <div><label>Ruang Transit</label><textarea id="transit" placeholder="Kosongkan jika nihil"></textarea></div>
+          <div><label>Pelayanan Kremasi</label><textarea id="kremasi" placeholder="Kosongkan jika nihil"></textarea></div>
+          <div><label>Penjemputan</label><textarea id="jemput" placeholder="Kosongkan jika nihil"></textarea></div>
+          <div><label>Kondisi Fasilitas</label><textarea id="fasilitas" placeholder="1. Lampu (Baik)&#10;2. Lift (Baik)"></textarea></div>
+          <div class="row">
+            <div><label>Rumah Duka</label><select id="kondRD"><option>Aman & Terkendali</option><option>Nihil</option><option>Perlu Perhatian</option></select></div>
+            <div><label>Krematorium</label><select id="kondKR"><option>Aman & Terkendali</option><option>Nihil</option><option>Perlu Perhatian</option></select></div>
+          </div>
+          <div><label>Rumah Abu</label><select id="kondRA"><option>Nihil</option><option>Aman & Terkendali</option><option>Perlu Perhatian</option></select></div>
+          <div><label>Catatan / Insiden</label><textarea id="catatan" placeholder="Opsional"></textarea></div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3>📷 Foto Papan Pelayanan</h3>
+        <div class="foto-section">
+          <div class="foto-upload-area" id="dropZone" onclick="document.getElementById('fotoInput').click()">
+            <div style="font-size:2rem">📷</div>
+            <p style="margin:8px 0 4px;font-weight:500">Ketuk untuk ambil foto / pilih dari galeri</p>
+            <p style="font-size:0.8rem;color:#666">Auto kompres & siap attach ke WA</p>
+          </div>
+          <input type="file" id="fotoInput" class="hidden-input" accept="image/*" capture="environment" />
+          <img id="fotoPreview" class="foto-preview" alt="Preview foto" />
+          <div class="foto-actions" id="fotoActions" style="display:none">
+            <button type="button" class="btn btn-sm" style="background:#ffb300;color:#fff" onclick="downloadFoto()"> Simpan Foto</button>
+            <button type="button" class="btn btn-sm btn-remove" onclick="hapusFoto()">🗑️ Hapus</button>
+          </div>
+          <p class="foto-info" id="fotoInfo"></p>
+        </div>
+      </div>
+
+      <div class="preview-box">
+        <h3 style="margin-bottom:8px;color:var(--dark)">️ Preview Laporan</h3>
+        <pre id="preview">Isi form untuk melihat preview...</pre>
+      </div>
+
+      <div class="actions">
+        <div class="btn-group">
+          <button type="button" class="btn btn-lg btn-out" onclick="clearForm()">🗑️ Bersihkan</button>
+          <button type="button" class="btn btn-lg btn-sec" onclick="saveDraft()">💾 Simpan Draft</button>
+          <button type="button" class="btn btn-lg btn-wa" onclick="sendWA()"> Kirim ke WA</button>
+        </div>
+      </div>
+    </form>
+    <footer>🔐 Data & foto tersimpan lokal di browser. Tidak ada server pihak ketiga.</footer>
+  </div>
+
+  <div class="toast" id="toast">Pesan</div>
+
+  <script>
+    // === UTILS ===
+    const $ = id => document.getElementById(id);
+    const toast = (msg, sec=2000) => { const t=$('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'), sec); };
+    const toggleSettings = () => $('settingsPanel').classList.toggle('active');
+    const getVal = id => $(id)?.value?.trim() || '';
+    const remove = btn => btn.closest('.staff-row').remove();
+    
+    const addStaff = cid => {
+      const box = $(cid);
+      const row = document.createElement('div');
+      row.className = 'staff-row';
+      const defJam = $('shift').value === 'pagi' ? '08.00 - 20.00' : '20.00 - 08.00';
+      row.innerHTML = `
+        <input type="text" class="staff" placeholder="Nama" />
+        <select class="jam-select">
+          <option>20.00 - 08.00</option><option>08.00 - 20.00</option>
+          <option>08.00 - 17.00</option><option>14.00 - 21.00</option>
+          <option>16.00 - 08.00</option><option>Standby</option><option>Lainnya...</option>
+        </select>
+        <input type="text" class="jam-custom" placeholder="Ketik..." />
+        <button type="button" class="btn btn-remove btn-sm" onclick="remove(this)">✕</button>
+      `;
+      row.querySelector('.jam-select').value = defJam;
+      box.appendChild(row);
+      row.querySelector('.staff').focus();
+    };
+
+    $('shift').addEventListener('change', () => {
+      const def = $('shift').value === 'pagi' ? '08.00 - 20.00' : '20.00 - 08.00';
+      document.querySelectorAll('.jam-select').forEach(s => {
+        if(s.value !== 'Lainnya...') s.value = def;
+      });
+      updatePreview();
+    });
+
+    document.addEventListener('change', e => {
+      if(e.target.classList.contains('jam-select')) {
+        const custom = e.target.parentElement.querySelector('.jam-custom');
+        if(custom) {
+          custom.style.display = e.target.value === 'Lainnya...' ? 'block' : 'none';
+          if(e.target.value !== 'Lainnya...') custom.value = '';
+        }
+        updatePreview();
+      }    });
+
+    const getStaffWithJam = cid => {
+      const rows = document.querySelectorAll(`#${cid} .staff-row`);
+      const result = [];
+      rows.forEach(row => {
+        const nama = row.querySelector('.staff').value.trim();
+        const jamSelect = row.querySelector('.jam-select').value;
+        const jamCustom = row.querySelector('.jam-custom').value.trim();
+        if(nama) {
+          const jam = jamSelect === 'Lainnya...' ? (jamCustom || 'Custom') : jamSelect;
+          result.push({nama, jam, isCustom: jamSelect === 'Lainnya...'});
+        }
+      });
+      return result;
+    };
+
+    const toIndoDate = d => {
+      if(!d) return '';
+      const [y,m,dd] = d.split('-');
+      const hari = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+      const bulan = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+      const dt = new Date(y, m-1, dd);
+      return `${hari[dt.getDay()]}, ${dd} ${bulan[m-1]} ${y}`;
+    };
+
+    const getShiftGreeting = () => {
+      const custom = getVal('customGreeting');
+      if(custom) return custom;
+      return getVal('shift') === 'pagi' ? 'Selamat pagi,' : 'Selamat malam,';
+    };
+
+    // === 1-BARIS PELAYANAN ===
+    function addPelayanan(val='') {
+      const container = $('pelayananContainer');
+      const row = document.createElement('div');
+      row.className = 'pelayanan-row';
+      row.innerHTML = `
+        <input type="text" class="pelayanan-input" placeholder="Contoh: Ny. Agnes (Nirwana E-F)" value="${val}" />
+        <button type="button" class="btn btn-remove btn-sm" onclick="removePelayanan(this)">✕</button>
+      `;
+      container.appendChild(row);
+      row.querySelector('.pelayanan-input').addEventListener('input', updatePreview);
+      if(!val) row.querySelector('.pelayanan-input').focus();
+    }
+
+    function removePelayanan(btn) {
+      btn.closest('.pelayanan-row').remove();
+      updatePreview();
+    }
+    function clearPelayanan() {
+      $('pelayananContainer').innerHTML = '';
+      addPelayanan();
+      updatePreview();
+      toast('🗑️ Baris dibersihkan');
+    }
+
+    function getPelayananData() {
+      return Array.from(document.querySelectorAll('.pelayanan-input'))
+                  .map(inp => inp.value.trim())
+                  .filter(v => v);
+    }
+
+    // === GENERATE REPORT ===
+    function genReport() {
+      const tgl = toIndoDate(getVal('tgl'));
+      const shift = getVal('shift');
+      const pet = getVal('petugas') || 'Petugas';
+      const danru = getVal('danru');
+      const kr = getStaffWithJam('listKR');
+      const rd = getStaffWithJam('listRD');
+      const greeting = getShiftGreeting();
+      const pelayanan = getPelayananData();
+
+      let txt = `Yth\nMan RDSM\n*Man BUJP SINGAWA*(Badan Usaha Jasa Pengamanan) RDSM security\n\n`;
+      txt += `${greeting} ijin lapsit serah terima hari ${tgl} sbb:\n\n`;
+      
+      if(danru) txt += `Mobile \nDanru ${danru}\n\n`;
+
+      txt += `*Shift ${shift} (Krematorium)*\n`;
+      txt += kr.length ? kr.map((p,i)=>`${i+1}. ${p.nama} ( ${p.jam} )`).join('\n') : `1. -`;
+      txt += `\n\n*Shift ${shift} (Rumah Duka)*\n`;
+      txt += rd.length ? rd.map((p,i)=>`${i+1}. ${p.nama} ( ${p.jam} )`).join('\n') : `1. -`;
+
+      txt += `\n\n*2. Kegiatan pelayanan*\n\n`;
+      txt += `*Ruang Transit*\n${getVal('transit') || '*Nihil*'}\n\n`;
+      
+      txt += `*Ruang Pelayanan & Almarhum/ah*\n`;
+      txt += pelayanan.length ? pelayanan.map(l => `• ${l}`).join('\n') : '*Nihil*';
+      txt += `\n\n`;
+      
+      txt += `*Pelayanan Kremasi*\n${getVal('kremasi') || '*Nihil*'}\n\n`;
+      txt += `*Penjemputan*\n${getVal('jemput') || '*Nihil*'}\n\n`;
+
+      txt += `*3. Temuan*\n${getVal('fasilitas') || '*Nihil*'}\n\n`;
+      txt += `*4. Kondisi pengunjung diarea RD, KR dan RA.*\n\n`;
+      txt += `Rumah Duka : ${getVal('kondRD')}\nKrematorium : ${getVal('kondKR')}\nRumah Abu : ${getVal('kondRA')}\n\n`;
+      if(getVal('catatan')) txt += `*Catatan*\n${getVal('catatan')}\n\n`;
+      txt += `*${pet} (petugas jaga shift ${shift})*`;      return txt;
+    }
+
+    function updatePreview() { $('preview').textContent = genReport(); }
+    document.querySelectorAll('input, select, textarea, .staff-box').forEach(el => el.addEventListener('input', updatePreview));
+
+    // === FOTO HANDLING ===
+    let compressedBlob = null;
+    let compressedFileName = '';
+
+    $('fotoInput').addEventListener('change', e => handleFoto(e.target.files[0]));
+    const dropZone = $('dropZone');
+    dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+    dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('dragover'); handleFoto(e.dataTransfer.files[0]); });
+
+    function handleFoto(file) {
+      if(!file || !file.type.startsWith('image/')) { toast('❌ File harus berupa gambar'); return; }
+      if(file.size > 5*1024*1024) { toast('❌ Ukuran file terlalu besar (max 5MB)'); return; }
+      const reader = new FileReader();
+      reader.onload = e => compressImage(e.target.result, file.name);
+      reader.readAsDataURL(file);
+    }
+
+    function compressImage(dataUrl, originalName, quality=0.7, maxWidth=1200) {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let {width, height} = img;
+        if(width > maxWidth) { height *= maxWidth/width; width = maxWidth; }
+        canvas.width = width; canvas.height = height;
+        canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+        canvas.toBlob(blob => {
+          compressedBlob = blob;
+          compressedFileName = `lapshift_${Date.now()}.jpg`;
+          $('fotoPreview').src = URL.createObjectURL(blob);
+          $('fotoPreview').style.display = 'block';
+          $('fotoActions').style.display = 'flex';
+          $('fotoInfo').textContent = `✅ ${originalName} → ${(blob.size/1024).toFixed(0)}KB`;
+          updatePreview();
+        }, 'image/jpeg', quality);
+      };
+      img.src = dataUrl;
+    }
+
+    function downloadFoto() {
+      if(!compressedBlob) return;
+      const a = document.createElement('a'); a.href = URL.createObjectURL(compressedBlob); a.download = compressedFileName;
+      document.body.appendChild(a); a.click(); a.remove();
+      toast('💾 Foto disimpan');    }
+
+    function hapusFoto() {
+      compressedBlob = null; compressedFileName = '';
+      $('fotoPreview').src = ''; $('fotoPreview').style.display = 'none';
+      $('fotoActions').style.display = 'none'; $('fotoInfo').textContent = '';
+      $('fotoInput').value = '';
+      updatePreview();
+    }
+
+    // === ACTIONS ===
+    async function sendWA() {
+      const msg = genReport();
+      const num = getVal('targetWA').replace(/\D/g,'');
+      const url = num ? `https://wa.me/${num}?text=${encodeURIComponent(msg)}` : `https://wa.me/?text=${encodeURIComponent(msg)}`;
+      
+      if(compressedBlob && navigator.share) {
+        try {
+          await navigator.share({ text: msg, files: [new File([compressedBlob], compressedFileName, {type:'image/jpeg'})] });
+          toast('✅ Terkirim via Share'); return;
+        } catch(e) { console.log('Share gagal, fallback'); }
+      }
+      
+      window.open(url, '_blank');
+      if(compressedBlob) setTimeout(() => { if(confirm('Lampirkan foto ke WhatsApp?\nOK = Download dulu')) downloadFoto(); }, 800);
+    }
+
+    function saveDraft() {
+      const data = {
+        tgl: getVal('tgl'), shift: getVal('shift'), petugas: getVal('petugas'), danru: getVal('danru'),
+        transit: getVal('transit'), kremasi: getVal('kremasi'), jemput: getVal('jemput'),
+        fasilitas: getVal('fasilitas'), kondRD: getVal('kondRD'), kondKR: getVal('kondKR'), kondRA: getVal('kondRA'), catatan: getVal('catatan'),
+        listKR: getStaffWithJam('listKR'), listRD: getStaffWithJam('listRD'),
+        pelayanan: getPelayananData()
+      };
+      if(compressedBlob) {
+        const reader = new FileReader();
+        reader.onload = e => { data.foto = e.target.result; localStorage.setItem('rdsm_draft_v10', JSON.stringify(data)); };
+        reader.readAsDataURL(compressedBlob);
+      } else {
+        delete data.foto; localStorage.setItem('rdsm_draft_v10', JSON.stringify(data));
+      }
+      toast('💾 Draft tersimpan');
+    }
+
+    function loadDraft() {
+      const raw = localStorage.getItem('rdsm_draft_v10');
+      if(!raw) return;
+      try {
+        const d = JSON.parse(raw);        const presets = ['20.00 - 08.00','08.00 - 20.00','08.00 - 17.00','14.00 - 21.00','16.00 - 08.00','Standby'];
+        
+        ['tgl','shift','petugas','danru','transit','kremasi','jemput','fasilitas','kondRD','kondKR','kondRA','catatan'].forEach(k => { if($(k) && d[k]) $(k).value = d[k]; });
+        
+        if(d.listKR) {
+          const box = $('listKR'); box.innerHTML = '';
+          d.listKR.forEach(p => {
+            const r = document.createElement('div'); r.className='staff-row';
+            const isP = presets.includes(p.jam);
+            r.innerHTML = `<input type="text" class="staff" value="${p.nama||''}"/><select class="jam-select">${presets.map(o=>`<option${o===(isP?p.jam:'Lainnya...')?' selected':''}>${o}</option>`).join('')}<option${!isP?' selected':''}>Lainnya...</option></select><input type="text" class="jam-custom" value="${!isP?p.jam:''}" style="display:${!isP?'block':'none'}"/><button type="button" class="btn btn-remove btn-sm" onclick="remove(this)">✕</button>`;
+            box.appendChild(r);
+          });
+        }
+        if(d.listRD) {
+          const box = $('listRD'); box.innerHTML = '';
+          d.listRD.forEach(p => {
+            const r = document.createElement('div'); r.className='staff-row';
+            const isP = presets.includes(p.jam);
+            r.innerHTML = `<input type="text" class="staff" value="${p.nama||''}"/><select class="jam-select">${presets.map(o=>`<option${o===(isP?p.jam:'Lainnya...')?' selected':''}>${o}</option>`).join('')}<option${!isP?' selected':''}>Lainnya...</option></select><input type="text" class="jam-custom" value="${!isP?p.jam:''}" style="display:${!isP?'block':'none'}"/><button type="button" class="btn btn-remove btn-sm" onclick="remove(this)">✕</button>`;
+            box.appendChild(r);
+          });
+        }
+        if(d.pelayanan && d.pelayanan.length) {
+          $('pelayananContainer').innerHTML = '';
+          d.pelayanan.forEach(p => addPelayanan(p));
+        } else {
+          addPelayanan();
+        }
+        if(d.foto) compressImage(d.foto, 'draft.jpg');
+        updatePreview();
+      } catch(e) { console.warn('Draft error', e); }
+    }
+
+    function clearForm() {
+      if(!confirm('Hapus semua isian & foto?')) return;
+      document.querySelectorAll('input, textarea').forEach(el => el.value='');
+      document.querySelectorAll('.staff-box').forEach(box => {
+        const defJam = $('shift').value === 'pagi' ? '08.00 - 20.00' : '20.00 - 08.00';
+        box.innerHTML = `<div class="staff-row"><input type="text" class="staff" placeholder="Nama"/><select class="jam-select"><option>20.00-08.00</option><option>08.00-20.00</option><option>08.00-17.00</option><option>14.00-21.00</option><option>16.00-08.00</option><option>Standby</option><option>Lainnya...</option></select><input type="text" class="jam-custom" style="display:none"/><button type="button" class="btn btn-remove btn-sm" onclick="remove(this)">✕</button></div>`;
+        box.querySelector('.jam-select').value = defJam;
+      });
+      $('pelayananContainer').innerHTML = '';
+      addPelayanan();
+      hapusFoto();
+      $('tgl').value = new Date().toISOString().split('T')[0];
+      updatePreview();
+    }
+
+    // === INIT ===
+    window.addEventListener('DOMContentLoaded', () => {      $('tgl').value = new Date().toISOString().split('T')[0];
+      const defJam = $('shift').value === 'pagi' ? '08.00 - 20.00' : '20.00 - 08.00';
+      document.querySelectorAll('.jam-select').forEach(s => s.value = defJam);
+      addPelayanan();
+      loadDraft();
+      updatePreview();
+      setInterval(saveDraft, 30000);
+    });
+    document.getElementById('lapshiftForm').addEventListener('submit', e => e.preventDefault());
+  </script>
+</body>
+</html>
